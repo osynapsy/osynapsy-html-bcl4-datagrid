@@ -39,8 +39,8 @@ class DataGrid extends Component
     {
         parent::__construct('div', $name);
         $this->setClass('bcl-datagrid');
-        $this->requireCss('assets/Bcl/DataGrid/style.css');
-        $this->requireJs('assets/Bcl/DataGrid/script.js');
+        $this->requireCss('assets/Bcl4/DataGrid/style.css');
+        $this->requireJs('assets/Bcl4/DataGrid/script.js');
     }
 
     /**
