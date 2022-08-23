@@ -1,7 +1,7 @@
 {
-    "name": "osynapsy.net/osynapsy-bcl4-datagrid",
+    "name": "osynapsy.net/osynapsy-html-bcl4-datagrid",
     "version": "1.0",
-    "homepage": "http://www.osynapsy.net/bcl4-datagrid",
+    "homepage": "http://www.osynapsy.net/html-bcl4-datagrid",
     "type": "library",
     "description": "Osynapsy bs4 datagrid implementation",
     "keywords": ["Osynapsy", "Datagrid component"],
@@ -10,12 +10,12 @@
         {
             "name": "Pietro Celeste",
             "email": "p.celeste@osynapsy.net",
-            "homepage": "https://github.com/osynapsy/osynapsy-bcl4-datagrid/wiki"
+            "homepage": "https://github.com/osynapsy/osynapsy-html-bcl4-datagrid/wiki"
         }
     ],
     "require": {
         "php" : ">=7.2.0",
-        "osynapsy.net/osynapsy-bcl4" : "@stable"
+        "osynapsy.net/osynapsy-html-bcl4" : "@stable"
     },
     "autoload" : {
         "psr-4": {
