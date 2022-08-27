@@ -1,3 +1,13 @@
+
+/*
+ * This file is part of the Osynapsy package.
+ *
+ * (c) Pietro Celeste <p.celeste@osynapsy.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 .bcl-datagrid > div.row {margin-bottom: -1px;}
 .bcl-datagrid div.row {margin-left: 0px !important; margin-right: 0px !important;}
 .bcl-datagrid .bcl-datagrid-th, .bcl-datagrid .bcl-datagrid-head {font-weight: bold; cursor: pointer;}
