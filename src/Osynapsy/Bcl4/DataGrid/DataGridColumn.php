@@ -89,7 +89,7 @@ class DataGridColumn
     public function buildThOrderByDummy($th, $orderedFields)
     {
         $orderByField = $this->properties['fieldOrderBy'];
-        $th->att('data-idx', $orderByField)->att('class', 'bcl-datagrid-th-order-by', true);
+        $th->addClass('bcl-datagrid-th-order-by')->attribute('data-idx', $orderByField);
         if (empty($orderedFields)) {
             return;
         }
@@ -169,7 +169,7 @@ class DataGridColumn
                 break;
         }
         if (!empty($properties['classTd'])) {
-            $cell->att('class', implode(' ', $properties['classTd']), true);
+            $cell->addClass(implode(' ', $properties['classTd']));
         }
         return ($value != '0' && empty($value)) ? '&nbsp;' : $value;
     }
@@ -197,14 +197,14 @@ class DataGridColumn
     {
         $class = $this->parentId.''.$this->properties['field'];
         $checkbox = new Tag('input');
-        $checkbox->att([
+        $checkbox->attributes([
             'type' => 'checkbox',
             'name' => $class.'['.$value.']',
             'class' => $class,
             'value' => $value
         ]);
         if (!empty($_POST[$class]) && !empty($_POST[$class][$value])) {
-            $checkbox->att('checked','checked');
+            $checkbox->attribute('checked','checked');
         }
         return $checkbox->get();
     }

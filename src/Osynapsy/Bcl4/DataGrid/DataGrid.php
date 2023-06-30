@@ -11,12 +11,12 @@
 
 namespace Osynapsy\Bcl4\DataGrid;
 
-use Osynapsy\Html\Component;
 use Osynapsy\Html\Tag;
+use Osynapsy\Html\Component\AbstractComponent;
 use Osynapsy\Bcl4\IPagination;
 use Osynapsy\Bcl4\Pagination;
 
-class DataGrid extends Component
+class DataGrid extends AbstractComponent
 {
     const BORDER_FULL = 'full';
     const BORDER_HORIZONTAL = 'horizontal';
@@ -36,23 +36,23 @@ class DataGrid extends Component
     protected $totals = [];
 
     public function __construct($name)
-    {
+    {        
         parent::__construct('div', $name);
-        $this->setClass('bcl-datagrid');
         $this->requireCss('Bcl4/DataGrid/style.css');
         $this->requireJs('Bcl4/DataGrid/script.js');
+        $this->addClass('bcl-datagrid');
     }
 
     /**
      * Internal method to build component
      */
-    public function __build_extra__()
+    public function preBuild()
     {
         //If datagrid has pager get data from it.
         $executionTime = microtime(true);
         if (!empty($this->pagination)) {
             try {
-                $this->setData($this->pagination->loadData(null, true));
+                $this->setDataset($this->pagination->loadData(null, true));
             } catch (\Exception $e) {
                 $this->printError($e->getMessage());
             }
@@ -122,9 +122,9 @@ class DataGrid extends Component
     protected function bodyFactory()
     {
         $this->body = new Tag('div');
-        $this->body->att('class','bcl-datagrid-body bg-white');
+        $this->body->attribute('class','bcl-datagrid-body bg-white');
         if ($this->rowWidth === 12) {
-            $this->normalBodyFactory($this->data);
+            $this->normalBodyFactory($this->dataset);
         } else {
             $this->bodyWithRowOversizeFactory();
         }
@@ -163,7 +163,7 @@ class DataGrid extends Component
     protected function bodyWithRowOversizeFactory()
     {
         $rowClass =  'bcl-datagrid-body-row row col-lg-'.$this->rowWidth;
-        foreach ($this->data as $recIdx => $rec) {
+        foreach ($this->dataset as $recIdx => $rec) {
             if (($recIdx) % (12 / $this->rowWidth) === 0) {
                 $row = $this->body->add(new Tag('div', null, 'row'));
             }
@@ -198,7 +198,7 @@ class DataGrid extends Component
             $tr->add($this->buildCellCommands($commands));
         }
         if (!empty($record['_url_detail'])) {
-            $tr->att('data-url-detail', $record['_url_detail']);
+            $tr->attribute('data-url-detail', $record['_url_detail']);
         }
         return $tr;
     }
@@ -399,7 +399,7 @@ class DataGrid extends Component
      */
     public function setBorderOn($borderType = 'horizontal')
     {
-        $this->setClass(sprintf('bcl-datagrid-border-on bcl-datagrid-border-on-%s', $borderType));
+        $this->addClass(sprintf('bcl-datagrid-border-on bcl-datagrid-border-on-%s', $borderType));
     }
 
     /**
