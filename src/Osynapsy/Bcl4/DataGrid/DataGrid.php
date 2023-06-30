@@ -38,8 +38,8 @@ class DataGrid extends AbstractComponent
     public function __construct($name)
     {        
         parent::__construct('div', $name);
-        $this->requireCss('Bcl4/DataGrid/style.css');
-        $this->requireJs('Bcl4/DataGrid/script.js');
+        $this->requireCss('bcl4/datagrid/style.css');
+        $this->requireJs('bcl4/datagrid/script.js');
         $this->addClass('bcl-datagrid');
     }
 
