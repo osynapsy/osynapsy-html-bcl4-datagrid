@@ -1,6 +1,6 @@
 {
     "name": "osynapsy/osynapsy-html-bcl4-datagrid",
-    "version": "1.0",
+    "version": "1.1",
     "homepage": "http://www.osynapsy.net/html-bcl4-datagrid",
     "type": "library",
     "description": "Osynapsy bs4 datagrid implementation",
