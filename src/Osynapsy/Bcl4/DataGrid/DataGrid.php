@@ -76,7 +76,7 @@ class DataGrid extends AbstractComponent
 
     private function printError($error)
     {
-        $this->setData([['error' => str_replace(PHP_EOL,'<br>',$error)]]);
+        $this->setDataset([['error' => str_replace(PHP_EOL,'<br>',$error)]]);
         $this->columns = [];
         $this->addColumn('Error', 'error', 'col-lg-12');
     }
