@@ -138,7 +138,7 @@ class DataGridColumn
     public function valueFormatting($value, &$cell, $properties, $rec, &$tr)
     {
         if (!empty($properties['function'])) {
-            $value = $properties['function']($value, $cell, $rec, $tr);
+            $value = $properties['function']($value, $rec, $cell, $tr);
         }
         switch($properties['type']) {
             case self::FIELD_TYPE_CHECKBOX:
