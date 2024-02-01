@@ -36,7 +36,7 @@ class DataGrid extends AbstractComponent
     protected $totals = [];
 
     public function __construct($name)
-    {        
+    {
         parent::__construct('div', $name);
         $this->requireCss('bcl4/datagrid/style.css');
         $this->requireJs('bcl4/datagrid/script.js');
@@ -309,7 +309,7 @@ class DataGrid extends AbstractComponent
      */
     public function getRowsCount()
     {
-        return count($this->data);
+        return count($this->dataset);
     }
 
     /**
