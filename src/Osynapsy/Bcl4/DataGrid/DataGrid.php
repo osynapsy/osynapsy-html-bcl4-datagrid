@@ -69,7 +69,7 @@ class DataGrid extends AbstractComponent
         $this->bodyFactory();
         $this->add($this->body);
         //If datagrid has pager append to foot and show it.
-        if (!empty($this->pagination)) {
+        if (!empty($this->pagination)) {            
             $this->add($this->buildPagination($this->pagination, microtime(true) - $executionTime));
         }
     }
