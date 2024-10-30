@@ -27,6 +27,7 @@ class DataGridColumn
     const FIELD_TYPE_INTEGER = 'integer';
     const FIELD_TYPE_DOLLAR  = 'dollar';
     const FIELD_TYPE_CHECKBOX = 'check';
+    const FIELD_TYPE_STRING = 'string';
     const FIELD_TYPE_COMMAND = 'commands';
 
     private $properties = [
@@ -166,6 +167,9 @@ class DataGridColumn
                 break;
             case self::FIELD_TYPE_COMMAND:
                 $properties['classTd'][] = 'cmd-row';
+                break;
+            case self::FIELD_TYPE_STRING:
+                $value = strval($value);
                 break;
         }
         if (!empty($properties['classTd'])) {
