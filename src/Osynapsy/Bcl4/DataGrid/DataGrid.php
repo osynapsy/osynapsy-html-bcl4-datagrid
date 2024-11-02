@@ -11,7 +11,6 @@
 
 namespace Osynapsy\Bcl4\DataGrid;
 
-use Osynapsy\Html\Tag;
 use Osynapsy\Html\Component\AbstractComponent;
 use Osynapsy\Bcl4\IPagination;
 use Osynapsy\Bcl4\Pagination;
@@ -26,7 +25,6 @@ class DataGrid extends AbstractComponent
     private $pagination;
     private $showHeader = true;
     private $title;
-    private $body;
     private $rowWidth = 12;
     private $rowMinimum = 0;
     private $showPaginationPageDimension = true;
@@ -48,201 +46,7 @@ class DataGrid extends AbstractComponent
      */
     public function preBuild()
     {
-        //If datagrid has pager get data from it.
-        $executionTime = microtime(true);
-        if (!empty($this->pagination)) {
-            try {
-                $this->setDataset($this->pagination->loadData(null, true));
-            } catch (\Exception $e) {
-                $this->printError($e->getMessage());
-            }
-        }
-        //If Datagrid has title append and show it.
-        if (!empty($this->title)) {
-            $this->add($this->buildTitle($this->title));
-        }
-        //If showHeader === true show datagrid columns.
-        if ($this->showHeader) {
-            $this->add($this->buildColumnHead());
-        }
-        //Append Body to datagrid container.
-        $this->bodyFactory();
-        $this->add($this->body);
-        //If datagrid has pager append to foot and show it.
-        if (!empty($this->pagination)) {            
-            $this->add($this->buildPagination($this->pagination, microtime(true) - $executionTime));
-        }
-    }
-
-    private function printError($error)
-    {
-        $this->setDataset([['error' => str_replace(PHP_EOL,'<br>',$error)]]);
-        $this->columns = [];
-        $this->addColumn('Error', 'error', 'col-lg-12');
-    }
-
-    /**
-     * Internal method for build a Datagrid column head.
-     *
-     * @return Tag
-     */
-    private function buildColumnHead()
-    {
-        $container = new Tag('div', null, 'd-none d-sm-block hidden-xs');
-        $tr = $container->add(new Tag('div', null, 'row bcl-datagrid-thead'));
-        $orderByFields = $this->pagination ? explode(',', $this->pagination->getOrderBy()) : null;
-        foreach(array_keys($this->columns) as $rawLabel) {
-            $th = $this->columns[$rawLabel]->buildTh($orderByFields);
-            if (empty($th)) {
-                continue;
-            }
-            $tr->add($th);
-        }
-        return $container;
-    }
-
-    /**
-     * Internal metod for build empty message.
-     *
-     * @param string $message
-     * @return Void
-     */
-    protected function emptyRowFactory($message)
-    {
-        $this->body->add(
-            '<div class="row"><div class="col-lg-12 text-center bcl-datagrid-td">'.$message.'</div></div>'
-        );
-    }
-
-    /**
-     * Internal method for build Datagrid body.
-     *
-     * @return Tag
-     */
-    protected function bodyFactory()
-    {
-        $this->body = new Tag('div');
-        $this->body->attribute('class','bcl-datagrid-body bg-white');
-        if ($this->rowWidth === 12) {
-            $this->normalBodyFactory($this->dataset);
-        } else {
-            $this->bodyWithRowOversizeFactory();
-        }
-    }
-
-    protected function normalBodyFactory($rows)
-    {
-        $i = 0;
-        foreach ($rows as $row) {
-            $this->body->add($this->bodyRowFactory($row));
-            $this->execTotalFunction($row ?? []);
-            $i++;
-        }
-        if ($i === 0) {
-            $this->emptyRowFactory($this->emptyMessage);
-            $i++;
-        }
-        for ($i; $i < $this->rowMinimum; $i++) {
-            $this->emptyRowFactory('&nbsp;');
-        }
-        $this->execTotalFunction([false]);
-    }
-
-    protected function execTotalFunction(array $rec)
-    {
-        if (empty($this->totalFunction)) {
-            return;
-        }
-        $function = $this->totalFunction;
-        $tr = $function($rec, $this->totals);
-        if (!empty($tr)) {
-           $this->body->add($tr);
-        }
-    }
-
-    protected function bodyWithRowOversizeFactory()
-    {
-        $rowClass =  'bcl-datagrid-body-row row col-lg-'.$this->rowWidth;
-        foreach ($this->dataset as $recIdx => $rec) {
-            if (($recIdx) % (12 / $this->rowWidth) === 0) {
-                $row = $this->body->add(new Tag('div', null, 'row'));
-            }
-            $row->add($this->bodyRowFactory($rec, $rowClass));
-            if (empty($this->totalFunction)) {
-                continue;
-            }
-            $function = $this->totalFunction;
-            $function($rec, $this->totals);
-        }
-    }
-
-    /**
-     * Internal method for build a Datagrid row
-     *
-     * @param type $row
-     * @return Tag
-     */
-    private function bodyRowFactory($record, $class = 'row bcl-datagrid-body-row')
-    {
-        $tr = new Tag('div', null, $class);
-        $commands = [];
-        foreach ($this->columns as $column) {
-            $cell = $column->buildTd($tr, $record ?? []);
-            if ($column->type !== DataGridColumn::FIELD_TYPE_COMMAND) {
-                $tr->add($cell);
-                continue;
-            }
-            $commands[] = $cell;
-        }
-        if (!empty($commands)) {
-            $tr->add($this->buildCellCommands($commands));
-        }
-        if (!empty($record['_url_detail'])) {
-            $tr->attribute('data-url-detail', $record['_url_detail']);
-        }
-        return $tr;
-    }
-
-    protected function buildCellCommands($commands)
-    {
-        $cell = null;
-        foreach ($commands as $i => $command) {
-            if (empty($i)) {
-                $cell = $command;
-                continue;
-            }
-            $cell->add($command->child(0));
-        }
-        return $cell;
-    }
-
-    /**
-     * Build Datagrid pagination
-     *
-     * @return Tag
-     */
-    private function buildPagination($pagination, $executionTime = 0)
-    {
-        $row = new Tag('div', null, 'd-flex justify-content-end mt-1');
-        if ($this->showExecutionTime) {
-            $row->add(sprintf('<small class="p-2 mr-auto">Tempo di esecuzione : %s sec</small>', $executionTime));
-        }
-        if ($this->showPaginationPageDimension) {
-            $row->add('<div class="p-2">Elementi per pagina</div>');
-            $row->add('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
-        }
-        if ($this->showPaginationPageInfo) {
-            $row->add(new Tag('div', null, 'p-2'))->add($pagination->getInfo());
-        }
-        $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
-        return $row;
-    }
-
-    private function buildTitle()
-    {
-        $tr = new Tag('div', null, 'row bcl-datagrid-title');
-        $tr->add(new Tag('div', null, 'col-lg-12'))->add($this->title);
-        return $tr;
+        $this->add(DataGridBuilder::build($this));
     }
 
     /**
@@ -270,18 +74,6 @@ class DataGrid extends AbstractComponent
     }
 
     /**
-     * Remove column from repo of columns
-     *
-     * @param string $label
-     */
-    public function removeColumn($label)
-    {
-        if (array_key_exists($label, $this->columns)) {
-            unset($this->columns[$label]);
-        }
-    }
-
-    /**
      * Get column by label
      *
      * @param string $label
@@ -290,6 +82,28 @@ class DataGrid extends AbstractComponent
     public function getColumn($label)
     {
         return $this->columns[$label];
+    }
+
+    /**
+     * Get all columns
+     *
+     * @param void
+     * @return array
+     */
+    public function getColumns()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * Get empty message
+     *
+     * @param void
+     * @return string
+     */
+    public function getEmptyMessage()
+    {
+        return $this->emptyMessage;
     }
 
     /**
@@ -303,13 +117,13 @@ class DataGrid extends AbstractComponent
     }
 
     /**
-     * Get number of rows of data
+     * Get title of grid
      *
-     * @return int
+     * @return string
      */
-    public function getRowsCount()
+    public function getTitle()
     {
-        return count($this->dataset);
+        return $this->title;
     }
 
     /**
@@ -321,6 +135,18 @@ class DataGrid extends AbstractComponent
     {
         $this->showHeader = false;
         return $this;
+    }
+
+    /**
+     * Remove column from repo of columns
+     *
+     * @param string $label
+     */
+    public function removeColumn($label)
+    {
+        if (array_key_exists($label, $this->columns)) {
+            unset($this->columns[$label]);
+        }
     }
 
     /**
@@ -417,5 +243,45 @@ class DataGrid extends AbstractComponent
     public function setTotalFunction(callable $function)
     {
         $this->totalFunction = $function;
+    }
+
+    /**
+     * Returns the value of $showHeader, indicating whether to show the table header.
+     *
+     * @return bool
+     */
+    public function showHeader()
+    {
+        return $this->showHeader;
+    }
+
+    /**
+     * Returns the value of showExecutionTime, indicating whether to show the execution time
+     *
+     * @return bool
+     */
+    public function showExecutionTime()
+    {
+        return $this->showExecutionTime;
+    }
+
+    /**
+     * Returns the value of showPageDimension, indicating whether to show the page dimension label in pagination
+     *
+     * @return bool
+     */
+    public function showPageDimension()
+    {
+        return $this->showPaginationPageDimension;
+    }
+
+    /**
+     * Returns the value of showPageInfo, indicating whether to show the page info in pagination
+     *
+     * @return bool
+     */
+    public function showPageInfo()
+    {
+        return $this->showPaginationPageInfo;
     }
 }

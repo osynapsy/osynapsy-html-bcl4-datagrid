@@ -44,7 +44,7 @@ class DataGridColumn
         'classTd' => [],
         'label' => '&nbsp;',
     ];
-    private $parentId;
+    public $parentId;
 
     public function __construct($label, $field, $class = '', $type = 'string', callable $function = null, $fieldOrderBy = null)
     {
@@ -60,47 +60,6 @@ class DataGridColumn
     private function builCheckBoxLabel()
     {
         return '<span class="fa fa-check bcl-datagrid-th-check-all" data-field-class="'.$this->parentId.''.$this->properties['field'].'"></span>';
-    }
-
-    /**
-     * Build a head cell of DataGrid2 component
-     *
-     * @param array $orderedFields
-     * @return Tag
-     */
-    public function buildTh($orderedFields)
-    {
-        $rawLabel = $this->properties['label'];
-        if (empty($rawLabel)) {
-            return;
-        } elseif ($rawLabel[0] == '_') {
-            return;
-        }
-        if ($this->properties['type'] === self::FIELD_TYPE_CHECKBOX) {
-            $rawLabel = $this->builCheckBoxLabel();
-        }
-        $th = new Tag('div', null, $this->properties['class'].' bcl-datagrid-th');
-        $th->add(new Tag('span'))->add($rawLabel);
-        if ($this->properties['type'] !== self::FIELD_TYPE_CHECKBOX) {
-            $this->buildThOrderByDummy($th, $orderedFields);
-        }
-        return $th;
-    }
-
-    public function buildThOrderByDummy($th, $orderedFields)
-    {
-        $orderByField = $this->properties['fieldOrderBy'];
-        $th->addClass('bcl-datagrid-th-order-by')->attribute('data-idx', $orderByField);
-        if (empty($orderedFields)) {
-            return;
-        }
-        foreach ([$orderByField, $orderByField.' DESC'] as $i => $token) {
-            $key = array_search($token, $orderedFields);
-            if ($key !== false) {
-                $icon = ($key + 1).' <i class="fa fa-arrow-'.(empty($i) ? 'up' : 'down').'"></i>';
-                $th->add('<span class="bcl-datagrid-th-order-label">'.$icon.' </span>');
-            }
-        }
     }
 
     /**
