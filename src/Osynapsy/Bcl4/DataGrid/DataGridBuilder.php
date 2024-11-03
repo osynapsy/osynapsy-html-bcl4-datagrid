@@ -53,7 +53,7 @@ class DataGridBuilder
         $header = new Tag('div', null, 'd-none d-sm-block hidden-xs');
         $tr = $header->add(new Tag('div', null, 'row bcl-datagrid-thead'));
         foreach($columns as $column) {
-            $th = DataGridColumnBuilder::buildTh($column, $orderByFields);
+            $th = DataGridColumnThBuilder::build($column, $orderByFields);
             if (empty($th)) {
                 continue;
             }
@@ -117,7 +117,8 @@ class DataGridBuilder
         $tr = new Tag('div', null, $class);
         $commands = [];
         foreach ($columns as $column) {
-            $cell = $column->buildTd($tr, $record ?? []);
+            //$cell = $column->buildTd($tr, $record ?? []);
+            $cell = DataGridColumnTdBuilder::build($column, $tr, $record ?? []);
             if ($column->type !== DataGridColumn::FIELD_TYPE_COMMAND) {
                 $tr->add($cell);
                 continue;

@@ -11,8 +11,6 @@
 
 namespace Osynapsy\Bcl4\DataGrid;
 
-use Osynapsy\Html\Tag;
-
 /**
  * Description of DataGridColumn
  *
@@ -55,121 +53,6 @@ class DataGridColumn
         $this->properties['function'] = $function;
         $this->properties['fieldOrderBy'] = empty($fieldOrderBy) ? $field : $fieldOrderBy;
         $this->addClassTd([$class]);
-    }
-
-    private function builCheckBoxLabel()
-    {
-        return '<span class="fa fa-check bcl-datagrid-th-check-all" data-field-class="'.$this->parentId.''.$this->properties['field'].'"></span>';
-    }
-
-    /**
-     * Build a body cell of DataGrid2 component
-     *
-     * @param Tag $tr
-     * @param type $record
-     * @return Tag
-     */
-    public function buildTd(Tag $tr, array $record)
-    {
-        $properties = $this->properties;
-        if (is_callable($properties['field'])) {
-            $properties['function'] = $properties['field'];
-            $value = null;
-        } elseif (!array_key_exists($properties['field'], $record)) {
-            $value = '<label class="label label-warning">No data found</label>';
-        } else {
-            $value = $record[$properties['field']];
-        }
-        $td = new Tag('div', null, 'bcl-datagrid-td');
-        $td->add($this->valueFormatting($value, $td, $properties, $record, $tr));
-        return $td;
-    }
-
-    /**
-     * Format a value of cell for correct visualization
-     *
-     * @param string $value to format.
-     * @param object $cell container of value
-     * @param type $properties
-     * @param type $rec record which contains value.
-     * @param type $tr row container object
-     * @return string
-     */
-    public function valueFormatting($value, &$cell, $properties, $rec, &$tr)
-    {
-        if (!empty($properties['function'])) {
-            $value = $properties['function']($value, $rec, $cell, $tr);
-        }
-        switch($properties['type']) {
-            case self::FIELD_TYPE_CHECKBOX:
-                if (empty($value)) {
-                    break;
-                }
-                $value = $this->buildCheckBox($value);
-                break;
-            case self::FIELD_TYPE_DATE_EU:
-                $datetime = \DateTime::createFromFormat('Y-m-d', $value);
-                $value = $datetime === false ? $value : $datetime->format('d/m/Y');
-                $properties['classTd'][] = 'text-center';
-                break;
-            case self::FIELD_TYPE_INTEGER:
-                $properties['classTd'][] = 'text-right';
-                break;
-            case self::FIELD_TYPE_EMPTY:
-                $value = '&nbsp;';
-                break;
-            case self::FIELD_TYPE_EURO:
-            case self::FIELD_TYPE_MONEY:
-            case self::FIELD_TYPE_DOLLAR;
-                $value = $this->formatCurrencyValue($value, $properties['type']);
-                $properties['classTd'][] = 'text-right';
-                break;
-            case self::FIELD_TYPE_COMMAND:
-                $properties['classTd'][] = 'cmd-row';
-                break;
-            case self::FIELD_TYPE_STRING:
-                $value = strval($value);
-                break;
-        }
-        if (!empty($properties['classTd'])) {
-            $cell->addClass(implode(' ', $properties['classTd']));
-        }
-        return ($value != '0' && empty($value)) ? '&nbsp;' : $value;
-    }
-
-    private function formatCurrencyValue($rawValue, $type)
-    {
-        $value = '';
-        switch($type){
-            case self::FIELD_TYPE_EURO:
-                $value = '&euro; ';
-                break;
-            case self::FIELD_TYPE_DOLLAR;
-                $value = '$ ';
-                break;
-        }
-        if (!empty($rawValue) && is_numeric($rawValue)) {
-            $value .= number_format($rawValue, 2, ',', '.');
-        } else {
-            $value = $rawValue;
-        }
-        return $value;
-    }
-
-    private function buildCheckBox($value)
-    {
-        $class = $this->parentId.''.$this->properties['field'];
-        $checkbox = new Tag('input');
-        $checkbox->attributes([
-            'type' => 'checkbox',
-            'name' => $class.'['.$value.']',
-            'class' => $class,
-            'value' => $value
-        ]);
-        if (!empty($_POST[$class]) && !empty($_POST[$class][$value])) {
-            $checkbox->attribute('checked','checked');
-        }
-        return $checkbox->get();
     }
 
     public function setParent($id)
