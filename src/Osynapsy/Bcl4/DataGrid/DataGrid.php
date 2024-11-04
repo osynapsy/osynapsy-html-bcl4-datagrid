@@ -13,7 +13,7 @@ namespace Osynapsy\Bcl4\DataGrid;
 
 use Osynapsy\Html\Component\AbstractComponent;
 use Osynapsy\Bcl4\IPagination;
-use Osynapsy\Bcl4\Pagination;
+use Osynapsy\Bcl4\Pagination\Pagination;
 
 class DataGrid extends AbstractComponent
 {
@@ -27,8 +27,6 @@ class DataGrid extends AbstractComponent
     private $title;
     private $rowWidth = 12;
     private $rowMinimum = 0;
-    private $showPaginationPageDimension = true;
-    private $showPaginationPageInfo = true;
     private $showExecutionTime = false;
     private $totalFunction;
     protected $totals = [];
@@ -200,11 +198,9 @@ class DataGrid extends AbstractComponent
     public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true, $showExecutionTime = false)
     {
         $paginationId = $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination');
-        $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension);
+        $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension, $showPageDimension, $showPageInfo);
         $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
-        $this->pagination->setParentComponent($this->id);
-        $this->showPaginationPageDimension = $showPageDimension;
-        $this->showPaginationPageInfo = $showPageInfo;
+        $this->pagination->setParentComponent($this->id);       
         $this->showExecutionTime = $showExecutionTime;
         return $this->pagination;
     }
@@ -263,25 +259,5 @@ class DataGrid extends AbstractComponent
     public function showExecutionTime()
     {
         return $this->showExecutionTime;
-    }
-
-    /**
-     * Returns the value of showPageDimension, indicating whether to show the page dimension label in pagination
-     *
-     * @return bool
-     */
-    public function showPageDimension()
-    {
-        return $this->showPaginationPageDimension;
-    }
-
-    /**
-     * Returns the value of showPageInfo, indicating whether to show the page info in pagination
-     *
-     * @return bool
-     */
-    public function showPageInfo()
-    {
-        return $this->showPaginationPageInfo;
     }
 }

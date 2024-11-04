@@ -157,14 +157,7 @@ class DataGridBuilder
         $row = new Tag('div', null, 'd-flex justify-content-end mt-1');
         if ($grid->showExecutionTime()) {
             $row->add(sprintf('<small class="p-2 mr-auto">Tempo di esecuzione : %s sec</small>', $executionTime));
-        }
-        if ($grid->showPageDimension()) {
-            $row->add('<div class="p-2">Elementi per pagina</div>');
-            $row->add('<div class="px-2 py-1">'.$pagination->getPageDimensionsCombo()->addClass('form-control-sm').'</div>');
-        }
-        if ($grid->showPageInfo()) {
-            $row->add(new Tag('div', null, 'p-2'))->add($pagination->getInfo());
-        }
+        }       
         $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
         return $row;
     }

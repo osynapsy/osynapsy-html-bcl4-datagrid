@@ -1,6 +1,6 @@
 {
     "name": "osynapsy/osynapsy-html-bcl4-datagrid",
-    "version": "1.2",
+    "version": "1.3",
     "homepage": "http://www.osynapsy.net/html-bcl4-datagrid",
     "type": "library",
     "description": "Osynapsy bs4 datagrid implementation",
@@ -15,7 +15,8 @@
     ],
     "require": {
         "php" : ">=7.2.0",
-        "osynapsy/osynapsy-html-bcl4" : "@stable"
+        "osynapsy/osynapsy-html-bcl4" : "@stable",
+        "osynapsy/osynapsy-html-bcl4-pagination" : "@stable"
     },
     "autoload" : {
         "psr-4": {
