@@ -12,7 +12,7 @@
 namespace Osynapsy\Bcl4\DataGrid;
 
 use Osynapsy\Html\Component\AbstractComponent;
-use Osynapsy\Bcl4\IPagination;
+use Osynapsy\Html\Component\PaginationInterface;
 use Osynapsy\Bcl4\Pagination\Pagination;
 
 class DataGrid extends AbstractComponent
@@ -189,7 +189,7 @@ class DataGrid extends AbstractComponent
 
     /**
      * Set a pagination object
-     *      *
+     *
      * @param type $db Handler db connection
      * @param string $sqlQuery Sql query
      * @param array $sqlParameters Parameters of sql query
@@ -200,17 +200,16 @@ class DataGrid extends AbstractComponent
         $paginationId = $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination');
         $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension, $showPageDimension, $showPageInfo);
         $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
-        $this->pagination->setParentComponent($this->id);       
+        $this->pagination->setParentComponent($this->id);
         $this->showExecutionTime = $showExecutionTime;
         return $this->pagination;
     }
 
-    public function setPaginator(IPagination $paginator, $showPageDimension = true, $showPageInfo = true)
+    public function setPaginator(PaginationInterface $paginator, $showExecutionTime = false)
     {
         $this->pagination = $paginator;
         $this->pagination->setParentComponent($this->id);
-        $this->showPaginationPageDimension = $showPageDimension;
-        $this->showPaginationPageInfo = $showPageInfo;
+        $this->showExecutionTime = $showExecutionTime;
         return $this->pagination;
     }
 
