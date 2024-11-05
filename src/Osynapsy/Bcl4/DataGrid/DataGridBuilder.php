@@ -15,10 +15,10 @@ class DataGridBuilder
         $executionTime = microtime(true);
         $title = $grid->getTitle();
         $columns = $grid->getColumns();
-        $pagination = $grid->getPagination();
+        $paginator= $grid->getPaginator();
         $emptyMessage = $grid->getEmptyMessage();        
-        $dataset = empty($pagination) ? $grid->getDataset() : self::loadDataset($pagination) ?? [];
-        $strOrderBy = empty($pagination) ? '' : $pagination->getOrderBy();
+        $dataset = empty($paginator) ? $grid->getDataset() : self::loadDataset($paginator) ?? [];
+        $strOrderBy = empty($paginator) ? '' : $paginator->getOrderBy();
         $container = new Tag('dummy');
         if (!empty($title)) {
             $container->add(self::buildTitle($title));
@@ -27,16 +27,16 @@ class DataGridBuilder
             $container->add(self::buildColumnHeader($columns, $strOrderBy));
         }
         $container->add(self::buildBody($columns, $dataset, $emptyMessage));
-        if (!empty($pagination)) {
-            $container->add(self::buildPagination($grid, $pagination, microtime(true) - $executionTime));
+        if (!empty($paginator)) {
+            $container->add(self::buildPagination($grid, $paginator, microtime(true) - $executionTime));
         }
         return $container;
     }
 
-    protected static function loadDataset($pagination)
+    protected static function loadDataset($paginator)
     {
         try {
-            return $pagination->loadData(null, true);
+            return $paginator->loadData(null, true);
         } catch (\Exception $e) {
             return [['error' => str_replace(PHP_EOL,'<br>', $e->getMessage())]];
         }

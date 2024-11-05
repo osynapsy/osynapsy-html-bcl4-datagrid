@@ -12,8 +12,8 @@
 namespace Osynapsy\Bcl4\DataGrid;
 
 use Osynapsy\Html\Component\AbstractComponent;
-use Osynapsy\Html\Component\PaginationInterface;
-use Osynapsy\Bcl4\Pagination\Pagination;
+use Osynapsy\Html\Component\PaginatorInterface;
+use Osynapsy\Bcl4\Paginator\Paginator;
 
 class DataGrid extends AbstractComponent
 {
@@ -22,7 +22,7 @@ class DataGrid extends AbstractComponent
 
     private $columns = [];
     private $emptyMessage = 'No data found';
-    private $pagination;
+    private $paginator;
     private $showHeader = true;
     private $title;
     private $rowWidth = 12;
@@ -107,11 +107,11 @@ class DataGrid extends AbstractComponent
     /**
      * return pager object
      *
-     * @return Pagination object
+     * @return Paginator object
      */
-    public function getPagination()
+    public function getPaginator()
     {
-        return $this->pagination;
+        return $this->paginator;
     }
 
     /**
@@ -188,7 +188,7 @@ class DataGrid extends AbstractComponent
     }
 
     /**
-     * Set a pagination object
+     * Configure datagrid Pagination
      *
      * @param type $db Handler db connection
      * @param string $sqlQuery Sql query
@@ -198,19 +198,24 @@ class DataGrid extends AbstractComponent
     public function setPagination($db, $sqlQuery, $sqlParameters, $pageDimension = 10, $showPageDimension = true, $showPageInfo = true, $showExecutionTime = false)
     {
         $paginationId = $this->id.(strpos($this->id, '_') ? '_pagination' : 'Pagination');
-        $this->pagination = new Pagination($paginationId, empty($pageDimension) ? 10 : $pageDimension, $showPageDimension, $showPageInfo);
-        $this->pagination->setSql($db, $sqlQuery, $sqlParameters);
-        $this->pagination->setParentComponent($this->id);
-        $this->showExecutionTime = $showExecutionTime;
-        return $this->pagination;
+        $paginator = new Paginator($paginationId, empty($pageDimension) ? 10 : $pageDimension, $showPageDimension, $showPageInfo);
+        $paginator->setSql($db, $sqlQuery, $sqlParameters);
+        return $this->setPaginator($paginator, $showExecutionTime);
     }
 
-    public function setPaginator(PaginationInterface $paginator, $showExecutionTime = false)
+    /**
+     * Link paginator object to datagrid
+     *
+     * @param PaginationInterface $paginator Paginator object
+     * @param type $showExecutionTime
+     * @return PaginationInterface
+     */
+    public function setPaginator(PaginatorInterface $paginator, $showExecutionTime = false) : PaginatorInterface
     {
-        $this->pagination = $paginator;
-        $this->pagination->setParentComponent($this->id);
+        $this->paginator = $paginator;
+        $this->paginator->setParentComponent($this->id);
         $this->showExecutionTime = $showExecutionTime;
-        return $this->pagination;
+        return $this->paginator;
     }
 
     /**
