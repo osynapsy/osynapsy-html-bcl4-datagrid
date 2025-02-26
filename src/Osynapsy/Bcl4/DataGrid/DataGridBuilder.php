@@ -10,8 +10,11 @@ use Osynapsy\Html\Tag;
  */
 class DataGridBuilder
 {
+    protected static $grid;
+    
     public static function build(DataGrid $grid)
     {
+        self::$grid = $grid;
         $executionTime = microtime(true);
         $title = $grid->getTitle();
         $columns = $grid->getColumns();
@@ -77,7 +80,9 @@ class DataGridBuilder
             $i++;
         } else {
             foreach ($dataset as $row) {
+                self::$grid->execListener('beforeRowAdd', $row, $body);
                 $body->add(self::bodyRowFactory($columns, $row));
+                self::$grid->execListener('afterRowAdd', $row, $body);
                 $i++;
             }
         }

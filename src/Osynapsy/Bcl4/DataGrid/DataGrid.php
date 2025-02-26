@@ -29,6 +29,7 @@ class DataGrid extends AbstractComponent
     private $rowMinimum = 0;
     private $showExecutionTime = false;
     private $totalFunction;
+    protected $listeners = [];
     protected $totals = [];
 
     public function __construct($name)
@@ -263,5 +264,24 @@ class DataGrid extends AbstractComponent
     public function showExecutionTime()
     {
         return $this->showExecutionTime;
+    }
+    
+    public function addListener($event, callable $fnc)
+    {
+        $this->listeners[$event] = $fnc;
+    }
+    
+    public function getListener($event)
+    {
+        return $this->listeners[$event] ?? function() {};
+    }
+    
+    public function execListener(...$argv)
+    {
+        $event = array_shift($argv);
+        if (array_key_exists($event, $this->listeners)) {
+            $fnc = self::$grid->getListener($event);
+            $fnc(...$argv);
+        }        
     }
 }
