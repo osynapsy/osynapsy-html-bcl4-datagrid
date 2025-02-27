@@ -19,7 +19,9 @@ class DataGrid extends AbstractComponent
 {
     const BORDER_FULL = 'full';
     const BORDER_HORIZONTAL = 'horizontal';
-
+    const HOOK_BEFORE_ADD_ROW = 'beforeAddRow';
+    const HOOK_AFTER_ADD_ROW = 'afterAddRow';
+    
     private $columns = [];
     private $emptyMessage = 'No data found';
     private $paginator;
@@ -29,7 +31,7 @@ class DataGrid extends AbstractComponent
     private $rowMinimum = 0;
     private $showExecutionTime = false;
     private $totalFunction;
-    protected $listeners = [];
+    protected $hooks = [];
     protected $totals = [];
 
     public function __construct($name)
@@ -266,22 +268,29 @@ class DataGrid extends AbstractComponent
         return $this->showExecutionTime;
     }
     
-    public function addListener($event, callable $fnc)
+    public function addAction($hook, callable $fnc)
     {
-        $this->listeners[$event] = $fnc;
+        $this->hooks[$hook] = $fnc;
     }
     
-    public function getListener($event)
+    public function getAction($hook)
     {
-        return $this->listeners[$event] ?? function() {};
+        return $this->hooks[$hook] ?? function() {};
     }
     
-    public function execListener(...$argv)
+    public function execAction(...$argv)
     {
-        $event = array_shift($argv);
-        if (array_key_exists($event, $this->listeners)) {
-            $fnc = self::$grid->getListener($event);
+        $hook = array_shift($argv);
+        if (array_key_exists($hook, $this->hooks)) {
+            $fnc = self::$grid->getListener($hook);
             $fnc(...$argv);
         }        
+    }
+    
+    public function removeAction($hook)
+    {
+        if (array_key_exists($hook, $this->hooks)) {
+            unset($this->hooks[$hook]);
+        }
     }
 }

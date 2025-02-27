@@ -80,9 +80,9 @@ class DataGridBuilder
             $i++;
         } else {
             foreach ($dataset as $row) {
-                self::$grid->execListener('beforeRowAdd', $row, $body);
+                self::$grid->execAction(DataGrid::HOOK_BEFORE_ADD_ROW, $row, $body);
                 $body->add(self::bodyRowFactory($columns, $row));
-                self::$grid->execListener('afterRowAdd', $row, $body);
+                self::$grid->execAction(DataGrid::HOOK_AFTER_ADD_ROW, $row, $body);
                 $i++;
             }
         }
