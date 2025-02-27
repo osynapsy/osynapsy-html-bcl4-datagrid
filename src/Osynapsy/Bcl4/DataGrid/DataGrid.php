@@ -282,7 +282,7 @@ class DataGrid extends AbstractComponent
     {
         $hook = array_shift($argv);
         if (array_key_exists($hook, $this->hooks)) {
-            $fnc = self::$grid->getListener($hook);
+            $fnc = $this->getAction($hook);
             $fnc(...$argv);
         }        
     }
