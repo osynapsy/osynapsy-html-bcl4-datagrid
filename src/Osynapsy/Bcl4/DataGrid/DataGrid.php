@@ -116,6 +116,16 @@ class DataGrid extends AbstractComponent
     {
         return $this->paginator;
     }
+    
+    /**
+     * return minimum row to show
+     *
+     * @return int
+     */    
+    public function getRowMinimum()
+    {
+        return $this->rowMinimum;
+    }
 
     /**
      * Get title of grid

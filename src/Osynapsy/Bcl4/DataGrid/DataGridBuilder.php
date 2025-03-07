@@ -22,6 +22,7 @@ class DataGridBuilder
         $emptyMessage = $grid->getEmptyMessage();        
         $dataset = empty($paginator) ? $grid->getDataset() : self::loadDataset($paginator) ?? [];
         $strOrderBy = empty($paginator) ? '' : $paginator->getOrderBy();
+        $minRows = $grid->getRowMinimum();
         $container = new Tag('dummy');
         if (!empty($title)) {
             $container->add(self::buildTitle($title));
@@ -29,7 +30,7 @@ class DataGridBuilder
         if ($grid->showHeader()) {
             $container->add(self::buildColumnHeader($columns, $strOrderBy));
         }
-        $container->add(self::buildBody($columns, $dataset, $emptyMessage));
+        $container->add(self::buildBody($columns, $dataset, $emptyMessage, $minRows ?? 0));
         if (!empty($paginator)) {
             $container->add(self::buildPagination($grid, $paginator, microtime(true) - $executionTime));
         }
