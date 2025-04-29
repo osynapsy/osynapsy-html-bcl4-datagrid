@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Osynapsy package.
  *
@@ -8,43 +7,73 @@
  * file that was distributed with this source code.
  */
 
-BclDataGrid = 
+const BclDataGrid = 
 {
-    init : function()
+    init: () => 
     {
-        $('.bcl-datagrid').parent().on('click tap','.row',function(){
-            if (!$(this).data('url-detail')) {
-                return;
-            }
-            Osynapsy.History.save();
-            window.location = $(this).data('url-detail');            
-        }).on('click','.bcl-datagrid-th-order-by',function(){
-            if (!$(this).data('idx')) {
-                return;
-            }            
-            var gridId = $(this).closest('.bcl-datagrid').attr('id');
-            var orderByField = $('.BclPaginationOrderBy','#'+gridId);
-            var orderByString = orderByField.val();
-            var curColumnIdx = $(this).data('idx');
-            if (orderByString.indexOf('[' + curColumnIdx +']') > -1){
-                orderByString = orderByString.replace('[' + curColumnIdx + ']','[' + curColumnIdx + ' DESC]');                
-            } else if (orderByString.indexOf('[' + curColumnIdx +' DESC]') > -1) {
-                orderByString = orderByString.replace('[' + curColumnIdx + ' DESC]','');                               
-            } else {
-                orderByString += '[' + curColumnIdx + ']';                
-            }
-            $('.BclPaginationCurrentPage','#'+gridId).val(1);
-            orderByField.val(orderByString);
-            Osynapsy.refreshComponents([gridId]);
-        }).on('click','.bcl-datagrid-th-check-all', function(){
-            var className = $(this).data('fieldClass');
-            $('.'+className).click();
+        document.querySelectorAll('.bcl-datagrid').forEach(datagrid => {
+            document.addEventListener('click', function(event) {
+                const datagrid = event.target.closest('.bcl-datagrid');
+                if (!datagrid) {
+                    return;
+                }
+                if (BclDataGrid.handleRowClick(event.target, datagrid)) return;
+                if (BclDataGrid.handleOrderByClick(event.target, datagrid)) return;
+                if (BclDataGrid.handleCheckAllClick(event.target, datagrid)) return;                
+            });
         });
+    },
+    handleRowClick : (target, datagrid) => 
+    {
+        const row = target.closest('.row');
+        if (!row || !datagrid.contains(row) || !row.dataset.urlDetail) {
+            return false;
+        }
+        Osynapsy.History.save();
+        window.location = row.dataset.urlDetail;
+        return true;
+    },
+    handleOrderByClick : (target, datagrid) => 
+    {
+        const thOrderBy = target.closest('.bcl-datagrid-th-order-by');
+        if (!thOrderBy || !datagrid.contains(thOrderBy) || !thOrderBy.dataset.idx) {
+            return false;
+        }
+        const orderByField = datagrid.querySelector('.BclPaginationOrderBy');
+        const currentPageField = datagrid.querySelector('.BclPaginationCurrentPage');
+        if (!orderByField || !currentPageField) {
+            return false;
+        }
+        const gridId = datagrid.id;
+        const idx = thOrderBy.dataset.idx;
+        let orderBy = orderByField.value;
+        if (orderBy.includes(`[${idx}]`)) {
+            orderBy = orderBy.replace(`[${idx}]`, `[${idx} DESC]`);
+        } else if (orderBy.includes(`[${idx} DESC]`)) {
+            orderBy = orderBy.replace(`[${idx} DESC]`, '');
+        } else {
+            orderBy += `[${idx}]`;
+        }
+        orderByField.value = orderBy;
+        currentPageField.value = 1;
+        Osynapsy.refreshComponents([gridId]);
+        return true;
+    },
+    handleCheckAllClick : (target, datagrid) =>
+    {
+        const checkAllCmd = target.closest('.bcl-datagrid-th-check-all');
+        if (!checkAllCmd || !datagrid.contains(checkAllCmd)) {
+            return false;
+        }
+        const checkboxes = datagrid.querySelectorAll('.grid-check');
+        const total = checkboxes.length;
+        const checked = Array.from(checkboxes).filter(chk => chk.checked).length;
+        const newState = total > checked;
+        checkboxes.forEach(chk => { chk.checked = newState; });
+        return true;
     }
 };
 
-if (window.Osynapsy){    
-    Osynapsy.plugin.register('BclDataGrid',function(){
-        BclDataGrid.init();
-    });
+if (window.Osynapsy) {
+    Osynapsy.plugin.register('BclDataGrid', () => BclDataGrid.init());
 }
