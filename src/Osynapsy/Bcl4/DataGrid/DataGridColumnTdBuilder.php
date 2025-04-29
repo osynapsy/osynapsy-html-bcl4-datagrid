@@ -27,8 +27,8 @@ class DataGridColumnTdBuilder
      * @param type $record
      * @return Tag
      */
-    public static function build(DataGridColumn $col, Tag $tr, array $record)
-    {        
+    public static function build(DataGridColumn $col, Tag $tr, array $record, $inEditing)
+    {
         if (is_callable($col->field)) {
             $col->function = $col->field;
             $value = null;
@@ -38,7 +38,7 @@ class DataGridColumnTdBuilder
             $value = $record[$col->field];
         }
         $td = new Tag('div', null, 'bcl-datagrid-td');
-        $td->add(self::valueFormatting($col, $value, $td, $record, $tr));
+        $td->add(self::valueFormatting($col, $value, $td, $record, $tr, $inEditing));
         return $td;
     }
 
@@ -47,16 +47,19 @@ class DataGridColumnTdBuilder
      *
      * @param DataGridColumn $col
      * @param string $value to format.
-     * @param object $cell container of value    
+     * @param object $cell container of value
      * @param type $rec record which contains value.
      * @param type $tr row container object
      * @return string
      */
-    public static function valueFormatting($col, $value, &$cell, $rec, &$tr)
+    public static function valueFormatting($col, $value, &$cell, $rec, &$tr, $inEditing)
     {
         $fnc = $col->function;
         if (!empty($fnc)) {
             $value = $fnc($value, $rec, $cell, $tr);
+        }
+        if ($inEditing && !empty($col->getControl()[0])) {
+            return self::controlFactory($col, $value);
         }
         switch($col->type) {
             case DataGridColumn::FIELD_TYPE_CHECKBOX:
@@ -68,7 +71,7 @@ class DataGridColumnTdBuilder
             case DataGridColumn::FIELD_TYPE_DATE_EU:
                 $datetime = \DateTime::createFromFormat('Y-m-d', $value);
                 $value = $datetime === false ? $value : $datetime->format('d/m/Y');
-                $col->addClassTd(['text-center']);                
+                $col->addClassTd(['text-center']);
                 break;
             case DataGridColumn::FIELD_TYPE_INTEGER:
                 $col->addClassTd(['text-right']);
@@ -121,12 +124,21 @@ class DataGridColumnTdBuilder
         $checkbox->attributes([
             'type' => 'checkbox',
             'name' => $class.'['.$value.']',
-            'class' => $class,
+            'class' => 'grid-check',
             'value' => $value
         ]);
         if (!empty($_POST[$class]) && !empty($_POST[$class][$value])) {
             $checkbox->attribute('checked','checked');
         }
         return $checkbox->get();
-    }    
+    }
+
+    protected static function controlFactory($col, $value)
+    {
+        list($class, $dataset) = $col->getControl();
+        $component = new $class($col->field.'_edit');
+        $component->setDataset($dataset);
+        $component->setValue($value);
+        return $component;
+    }
 }
