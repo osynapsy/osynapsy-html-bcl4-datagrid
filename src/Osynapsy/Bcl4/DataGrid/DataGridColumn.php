@@ -43,6 +43,8 @@ class DataGridColumn
         'label' => '&nbsp;',
     ];
     public $parentId;
+    protected $control;
+    protected $controlDataset = [];
 
     public function __construct($label, $field, $class = '', $type = 'string', callable $function = null, $fieldOrderBy = null)
     {
@@ -71,6 +73,24 @@ class DataGridColumn
         $this->properties['classTd'] = [$class];
     }
 
+    public function setFunction(callable $fnc)
+    {
+        $this->properties['function'] = $fnc;
+    }
+    
+    public function setEditControl($control, $dataset)
+    {        
+        if (!empty($dataset)) {
+            $this->controlDataset = $dataset;
+        }
+        return $this->control = $control;
+    }
+    
+    public function getControl()
+    {
+        return [$this->control, $this->controlDataset];
+    }
+    
     public function __get($name)
     {
         return $this->properties[$name];

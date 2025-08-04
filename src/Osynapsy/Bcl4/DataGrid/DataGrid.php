@@ -31,6 +31,7 @@ class DataGrid extends AbstractComponent
     private $rowMinimum = 0;
     private $showExecutionTime = false;
     private $totalFunction;
+    private $inediting;
     protected $hooks = [];
     protected $totals = [];
 
@@ -40,6 +41,7 @@ class DataGrid extends AbstractComponent
         $this->requireCss('bcl4/datagrid/style.css');
         $this->requireJs('bcl4/datagrid/script.js');
         $this->addClass('bcl-datagrid');
+        $this->inediting = fn() => false;
     }
 
     /**
@@ -82,6 +84,9 @@ class DataGrid extends AbstractComponent
      */
     public function getColumn($label)
     {
+        if (!array_key_exists($label, $this->columns)) {
+            throw new \Exception(sprintf('The column %s don\'t exists in %s', $label, $this->id));
+        }
         return $this->columns[$label];
     }
 
@@ -288,6 +293,11 @@ class DataGrid extends AbstractComponent
         return $this->hooks[$hook] ?? function() {};
     }
     
+    public function getRowsCount()
+    {
+        return count($this->dataset ?? []);
+    }
+    
     public function execAction(...$argv)
     {
         $hook = array_shift($argv);
@@ -302,5 +312,15 @@ class DataGrid extends AbstractComponent
         if (array_key_exists($hook, $this->hooks)) {
             unset($this->hooks[$hook]);
         }
+    }
+    
+    public function setEditFunction(callable $fnc)
+    {
+        $this->inediting = $fnc;
+    }
+    
+    public function getInEditing()
+    {
+        return $this->inediting;
     }
 }

@@ -11,7 +11,7 @@ use Osynapsy\Html\Tag;
 class DataGridBuilder
 {
     protected static $grid;
-    
+
     public static function build(DataGrid $grid)
     {
         self::$grid = $grid;
@@ -19,7 +19,7 @@ class DataGridBuilder
         $title = $grid->getTitle();
         $columns = $grid->getColumns();
         $paginator= $grid->getPaginator();
-        $emptyMessage = $grid->getEmptyMessage();        
+        $emptyMessage = $grid->getEmptyMessage();
         $dataset = empty($paginator) ? $grid->getDataset() : self::loadDataset($paginator) ?? [];
         $strOrderBy = empty($paginator) ? '' : $paginator->getOrderBy();
         $minRows = $grid->getRowMinimum();
@@ -30,7 +30,7 @@ class DataGridBuilder
         if ($grid->showHeader()) {
             $container->add(self::buildColumnHeader($columns, $strOrderBy));
         }
-        $container->add(self::buildBody($columns, $dataset, $emptyMessage, $minRows ?? 0));
+        $container->add(self::buildBody($columns, $dataset, $emptyMessage, $grid->getInEditing(), $minRows ?? 0));
         if (!empty($paginator)) {
             $container->add(self::buildPagination($grid, $paginator, microtime(true) - $executionTime));
         }
@@ -71,7 +71,7 @@ class DataGridBuilder
      *
      * @return Tag
      */
-    protected static function buildBody($columns, $dataset, $emptyMessage, $minRows = 0)
+    protected static function buildBody($columns, $dataset, $emptyMessage, $fncEditing, $minRows = 0)
     {
         $body = new Tag('div');
         $body->attribute('class','bcl-datagrid-body bg-white');
@@ -82,7 +82,7 @@ class DataGridBuilder
         } else {
             foreach ($dataset as $row) {
                 self::$grid->execAction(DataGrid::HOOK_BEFORE_ADD_ROW, $row, $body);
-                $body->add(self::bodyRowFactory($columns, $row));
+                $body->add(self::bodyRowFactory($columns, $row, 'row bcl-datagrid-body-row', $fncEditing($row)));
                 self::$grid->execAction(DataGrid::HOOK_AFTER_ADD_ROW, $row, $body);
                 $i++;
             }
@@ -118,13 +118,13 @@ class DataGridBuilder
      * @param type $row
      * @return Tag
      */
-    private static function bodyRowFactory($columns, $record, $class = 'row bcl-datagrid-body-row')
+    private static function bodyRowFactory($columns, $record, $class, $inEditing)
     {
         $tr = new Tag('div', null, $class);
         $commands = [];
         foreach ($columns as $column) {
             //$cell = $column->buildTd($tr, $record ?? []);
-            $cell = DataGridColumnTdBuilder::build($column, $tr, $record ?? []);
+            $cell = DataGridColumnTdBuilder::build($column, $tr, is_array($record) ? $record : [], $inEditing);
             if ($column->type !== DataGridColumn::FIELD_TYPE_COMMAND) {
                 $tr->add($cell);
                 continue;
@@ -163,7 +163,7 @@ class DataGridBuilder
         $row = new Tag('div', null, 'd-flex justify-content-end mt-1');
         if ($grid->showExecutionTime()) {
             $row->add(sprintf('<small class="p-2 mr-auto">Tempo di esecuzione : %s sec</small>', $executionTime));
-        }       
+        }
         $row->add(new Tag('div', null, 'pt-1 pl-2'))->add($pagination)->setPosition('end');
         return $row;
     }
