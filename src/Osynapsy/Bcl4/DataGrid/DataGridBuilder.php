@@ -120,7 +120,7 @@ class DataGridBuilder
      */
     private static function bodyRowFactory($columns, $record, $class, $inEditing)
     {
-        $tr = new Tag('div', null, $class);
+        $tr = new DataGridRow('div', null, $class);
         $commands = [];
         foreach ($columns as $column) {
             //$cell = $column->buildTd($tr, $record ?? []);

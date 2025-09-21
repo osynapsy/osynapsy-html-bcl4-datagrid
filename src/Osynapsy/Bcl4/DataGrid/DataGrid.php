@@ -21,7 +21,7 @@ class DataGrid extends AbstractComponent
     const BORDER_HORIZONTAL = 'horizontal';
     const HOOK_BEFORE_ADD_ROW = 'beforeAddRow';
     const HOOK_AFTER_ADD_ROW = 'afterAddRow';
-    
+
     private $columns = [];
     private $emptyMessage = 'No data found';
     private $paginator;
@@ -121,12 +121,12 @@ class DataGrid extends AbstractComponent
     {
         return $this->paginator;
     }
-    
+
     /**
      * return minimum row to show
      *
      * @return int
-     */    
+     */
     public function getRowMinimum()
     {
         return $this->rowMinimum;
@@ -282,43 +282,43 @@ class DataGrid extends AbstractComponent
     {
         return $this->showExecutionTime;
     }
-    
+
     public function addAction($hook, callable $fnc)
     {
         $this->hooks[$hook] = $fnc;
     }
-    
+
     public function getAction($hook)
     {
         return $this->hooks[$hook] ?? function() {};
     }
-    
+
     public function getRowsCount()
     {
         return count($this->dataset ?? []);
     }
-    
+
     public function execAction(...$argv)
     {
         $hook = array_shift($argv);
         if (array_key_exists($hook, $this->hooks)) {
             $fnc = $this->getAction($hook);
             $fnc(...$argv);
-        }        
+        }
     }
-    
+
     public function removeAction($hook)
     {
         if (array_key_exists($hook, $this->hooks)) {
             unset($this->hooks[$hook]);
         }
     }
-    
+
     public function setEditFunction(callable $fnc)
     {
         $this->inediting = $fnc;
     }
-    
+
     public function getInEditing()
     {
         return $this->inediting;
