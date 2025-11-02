@@ -148,7 +148,7 @@ class DataGridBuilder
                 $cell = $command;
                 continue;
             }
-            $cell->add($command->child(0));
+            $cell->add($command->getChild(0));
         }
         return $cell;
     }
