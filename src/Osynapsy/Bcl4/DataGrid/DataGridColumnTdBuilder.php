@@ -70,10 +70,10 @@ class DataGridColumnTdBuilder
             case DataGridColumn::FIELD_TYPE_DATE_EU:
                 $datetime = \DateTime::createFromFormat('Y-m-d', $value);
                 $value = $datetime === false ? $value : $datetime->format('d/m/Y');
-                $col->addClassTd(['text-center']);
+                $cell->addClass('text-center');
                 break;
             case DataGridColumn::FIELD_TYPE_INTEGER:
-                $col->addClassTd(['text-right']);
+                $cell->addClass('text-right');
                 break;
             case DataGridColumn::FIELD_TYPE_EMPTY:
                 $value = '&nbsp;';
@@ -82,10 +82,10 @@ class DataGridColumnTdBuilder
             case DataGridColumn::FIELD_TYPE_MONEY:
             case DataGridColumn::FIELD_TYPE_DOLLAR;
                 $value = self::formatCurrencyValue($value, $col->type);
-                $col->addClassTd(['text-right']);
+                $cell->addClass('text-right');
                 break;
             case DataGridColumn::FIELD_TYPE_COMMAND:
-                $col->addClassTd(['cmd-row']);
+                $cell->addClass('cmd-row');
                 break;
             case DataGridColumn::FIELD_TYPE_STRING:
                 $value = strval($value);
