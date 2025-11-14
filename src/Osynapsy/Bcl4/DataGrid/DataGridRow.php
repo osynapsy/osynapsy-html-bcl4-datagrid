@@ -1,7 +1,6 @@
 <?php
-
 /*
- * This file is part of the Osynapsy package.
+ * This file is part of the Osynapsy Bcl4 Datagrid package.
  *
  * (c) Pietro Celeste <p.celeste@osynapsy.net>
  *

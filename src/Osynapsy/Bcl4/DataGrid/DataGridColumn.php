@@ -1,7 +1,6 @@
 <?php
-
 /*
- * This file is part of the Osynapsy package.
+ * This file is part of the Osynapsy Bcl4 Datagrid package.
  *
  * (c) Pietro Celeste <p.celeste@osynapsy.net>
  *
@@ -77,20 +76,20 @@ class DataGridColumn
     {
         $this->properties['function'] = $fnc;
     }
-    
+
     public function setEditControl($control, $dataset)
-    {        
+    {
         if (!empty($dataset)) {
             $this->controlDataset = $dataset;
         }
         return $this->control = $control;
     }
-    
+
     public function getControl()
     {
         return [$this->control, $this->controlDataset];
     }
-    
+
     public function __get($name)
     {
         return $this->properties[$name];
